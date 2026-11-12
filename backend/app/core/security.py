@@ -10,7 +10,12 @@ from app.db import get_db
 from app.models.models import User
 
 # JWT Configuration
-SECRET_KEY = os.getenv("JWT_SECRET", "supersecretjwtkeythatshouldbechangedinproduction123!")
+APP_ENV = os.getenv("APP_ENV", "development").lower()
+SECRET_KEY = os.getenv("JWT_SECRET")
+if not SECRET_KEY:
+    if APP_ENV == "production":
+        raise RuntimeError("JWT_SECRET must be configured in production")
+    SECRET_KEY = "local-development-only-secret"
 ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "1440"))
 

@@ -23,6 +23,12 @@ for origin in raw_origins:
     if cleaned:
         allowed_origins.append(cleaned)
 
+if os.getenv("APP_ENV", "development").lower() == "production":
+    if not os.getenv("CORS_ALLOWED_ORIGINS"):
+        raise RuntimeError("CORS_ALLOWED_ORIGINS must be configured in production")
+    if any(not origin.startswith("https://") for origin in allowed_origins):
+        raise RuntimeError("Production CORS origins must be explicit HTTPS origins")
+
 print(f"CORS raw environment configuration string: {allowed_origins_env}", flush=True)
 print(f"CORS parsed and cleaned allow_origins list: {allowed_origins}", flush=True)
 
